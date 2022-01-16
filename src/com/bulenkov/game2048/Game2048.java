@@ -27,6 +27,7 @@ import java.util.List;
 /**
  * @author Konstantin Bulenkov
  */
+
 public class Game2048 extends JPanel {
   private static final Color BG_COLOR = new Color(0xbbada0);
   private static final String FONT_NAME = "Arial";
@@ -38,12 +39,18 @@ public class Game2048 extends JPanel {
   boolean myLose = false;
   int myScore = 0;
 
+
+
   public Game2048() {
+
     setPreferredSize(new Dimension(340, 400));
     setFocusable(true);
     addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(KeyEvent e) {
+        makeMove('r');
+        makeMove('r');
+        makeMove('r');
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
           resetGame();
         }
@@ -89,6 +96,34 @@ public class Game2048 extends JPanel {
       }
     });
     resetGame();
+  }
+
+  public void makeMove(char e) {
+    if (!canMove()) {
+      myLose = true;
+    }
+    if (!myWin && !myLose) {
+      switch (e) {
+        case 'l':
+          left();
+          break;
+        case 'r':
+          right();
+          break;
+        case 'd':
+          down();
+          break;
+        case 'u':
+          up();
+          break;
+      }
+      printTile();
+    }
+    if (!myWin && !canMove()) {
+      myLose = true;
+    }
+
+    repaint();
   }
 
   public void resetGame() {
@@ -390,7 +425,13 @@ public class Game2048 extends JPanel {
     game.setSize(340, 400);
     game.setResizable(false);
 
-    game.add(new Game2048());
+    Game2048 game2048 =new Game2048();
+    game.add(game2048);
+    game2048.makeMove('r');
+    game2048.makeMove('d');
+    game2048.makeMove('u');
+    game2048.makeMove('l');
+
 
     game.setLocationRelativeTo(null);
     game.setVisible(true);
