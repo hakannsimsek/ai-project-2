@@ -18,8 +18,6 @@ package com.bulenkov.game2048;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +32,7 @@ public class Game2048 extends JPanel {
   private static final int TILE_SIZE = 64;
   private static final int TILES_MARGIN = 16;
 
-  private Tile[] myTiles;
+  public Tile[] myTiles;
   boolean myWin = false;
   boolean myLose = false;
   int myScore = 0;
@@ -45,7 +43,7 @@ public class Game2048 extends JPanel {
 
     setPreferredSize(new Dimension(340, 400));
     setFocusable(true);
-    addKeyListener(new KeyAdapter() {
+    /*addKeyListener(new KeyAdapter() {
       @Override
       public void keyPressed(KeyEvent e) {
         makeMove('r');
@@ -94,11 +92,11 @@ public class Game2048 extends JPanel {
 
         repaint();
       }
-    });
+    });*/
     resetGame();
   }
 
-  public void makeMove(char e) {
+  public Tile[] makeMove(char e) {
     if (!canMove()) {
       myLose = true;
     }
@@ -117,13 +115,14 @@ public class Game2048 extends JPanel {
           up();
           break;
       }
-      printTile();
+      //printTile();
     }
     if (!myWin && !canMove()) {
       myLose = true;
     }
 
     repaint();
+    return myTiles;
   }
 
   public void resetGame() {
@@ -419,21 +418,99 @@ public class Game2048 extends JPanel {
   }
 
   public static void main(String[] args) {
-    JFrame game = new JFrame();
+    /*JFrame game = new JFrame();
     game.setTitle("2048 Game");
     game.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     game.setSize(340, 400);
-    game.setResizable(false);
+    game.setResizable(false);*/
 
-    Game2048 game2048 =new Game2048();
-    game.add(game2048);
-    game2048.makeMove('r');
-    game2048.makeMove('d');
-    game2048.makeMove('u');
-    game2048.makeMove('l');
+    //Game2048 game2048 =new Game2048();
+    game2048 = new Game2048();
+    /*game.add(game2048);
+
+
 
 
     game.setLocationRelativeTo(null);
-    game.setVisible(true);
+    game.setVisible(true);*/
+    printTile(game2048.myTiles);
+
+    HeuristicFour heuristicFour = new HeuristicFour();
+    heuristicFour.run(game2048,xply);
+
+
+    HeuristicThree heuristicThree = new HeuristicThree();
+    heuristicThree.run(game2048,xply);
+
+
+
+
+
   }
+
+  public static LinkedList<Game2048.Tile[]> gimmeLeaves(Game2048.Tile maze[],int ply){
+    xply = ply;
+    leafNodesList.clear();
+    Game2048.givePlyGameResults(maze,-1);
+    return leafNodesList;
+  }
+
+  static String str = "";
+  static int xply = 1;
+  static LinkedList<Game2048.Tile[]> leafNodesList = new LinkedList<Game2048.Tile[]>();
+  static Game2048 game2048;
+
+  private static void givePlyGameResults(Game2048.Tile tilees[],int deep) {
+    deep++;
+
+    char[] directions = {'r', 'd', 'l', 'u'};
+
+    for (char direction : directions) {
+      if (deep == xply) {
+        continue;
+      } else {
+        Game2048.Tile parent[] = tilees;
+        str += direction;
+        System.out.println("String : " + str);
+        game2048.myTiles = deepCopyTiles(tilees);
+        tilees = game2048.makeMove(direction);
+        if (str.length() == xply) {
+          printTile(tilees);
+          leafNodesList.add(tilees);
+        }
+        givePlyGameResults(deepCopyTiles(tilees), deep);
+        tilees = parent;
+      }
+      str = str.substring(0, str.length() - 1);
+    }
+
+  }
+
+  public static void printTile(Game2048.Tile maze[]){
+    for (int i = 0 ; i < 4 ; i++){
+      for (int j = 0 ; j < 4 ; j++)
+        System.out.print(maze[i*4+j].value + " | ");
+      System.out.println("");
+    }
+    System.out.println("-----------------");
+  }
+
+
+  private static Game2048.Tile[] deepCopyTiles(Game2048.Tile tiles[]) {
+    Game2048.Tile[] newTiles = new Game2048.Tile[tiles.length];
+    for (int i = 0 ; i < tiles.length ; i++){
+      Game2048.Tile newTile = new Game2048.Tile();
+      newTile.value = tiles[i].value;
+      newTiles[i] = newTile;
+    }
+    return newTiles;
+  }
+
+
+
+
+
+
+
+
 }
