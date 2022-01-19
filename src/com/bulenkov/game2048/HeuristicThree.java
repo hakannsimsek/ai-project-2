@@ -62,7 +62,7 @@ public class HeuristicThree {
                 checkMonotonicity(line);
             }
         }
-        for (int i = 0 ; i < leaves.length ; i++) {
+        for (int i = 0 ; i < 4 ; i++) {
             for (int x = 0; x < 4; x++) {
                 int asd = 4 * x + i;
                 line[x] = leaves[asd];
