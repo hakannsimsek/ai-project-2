@@ -99,6 +99,7 @@ public class Game2048 extends JPanel {
   public Tile[] makeMove(char e) {
     if (!canMove()) {
       myLose = true;
+      return null;
     }
     if (!myWin && !myLose) {
       switch (e) {
@@ -119,6 +120,7 @@ public class Game2048 extends JPanel {
     }
     if (!myWin && !canMove()) {
       myLose = true;
+      return null;
     }
 
     repaint();
@@ -153,14 +155,7 @@ public class Game2048 extends JPanel {
     }
   }
 
-  public void printTile(){
-    for (int i = 0 ; i < 4 ; i++){
-      for (int j = 0 ; j < 4 ; j++)
-        System.out.print(myTiles[i*4+j].value + " | ");
-      System.out.println("");
-    }
-    System.out.println("-----------------");
-  }
+
 
   public void right() {
     myTiles = rotate(180);
@@ -432,11 +427,13 @@ public class Game2048 extends JPanel {
 
 
     game.setLocationRelativeTo(null);
-    game.setVisible(true);*/
-    printTile(game2048.myTiles);
-
+    game.setVisible(true);
+    System.out.println("Staring board : ");
+    printBoard(game2048.myTiles);*/
+/*
     HeuristicFour heuristicFour = new HeuristicFour();
     heuristicFour.run(game2048,xply);
+*/
 
 
     HeuristicThree heuristicThree = new HeuristicThree();
@@ -448,16 +445,22 @@ public class Game2048 extends JPanel {
 
   }
 
-  public static LinkedList<Game2048.Tile[]> gimmeLeaves(Game2048.Tile maze[],int ply){
+  public static LinkedList<Game2048.Tile[]> gimmeLeaves(Game2048.Tile board[],int ply,LinkedList<String> leafNodeName){
     xply = ply;
     leafNodesList.clear();
-    Game2048.givePlyGameResults(maze,-1);
+    leafNodeNames = leafNodeName;
+    try {
+      Game2048.givePlyGameResults(board,-1);
+    }catch (NullPointerException ignore){
+
+    }
     return leafNodesList;
   }
 
   static String str = "";
   static int xply = 1;
   static LinkedList<Game2048.Tile[]> leafNodesList = new LinkedList<Game2048.Tile[]>();
+  static LinkedList<String> leafNodeNames;
   static Game2048 game2048;
 
   private static void givePlyGameResults(Game2048.Tile tilees[],int deep) {
@@ -472,13 +475,14 @@ public class Game2048 extends JPanel {
         Game2048.Tile parent[] = tilees;
         str += direction;
         System.out.println("String : " + str);
-        game2048.myTiles = deepCopyTiles(tilees);
+        game2048.myTiles = deepCopyBoard(tilees);
         tilees = game2048.makeMove(direction);
         if (str.length() == xply) {
-          printTile(tilees);
+          printBoard(tilees);
           leafNodesList.add(tilees);
+          leafNodeNames.add(str);
         }
-        givePlyGameResults(deepCopyTiles(tilees), deep);
+        givePlyGameResults(deepCopyBoard(tilees), deep);
         tilees = parent;
       }
       str = str.substring(0, str.length() - 1);
@@ -486,17 +490,17 @@ public class Game2048 extends JPanel {
 
   }
 
-  public static void printTile(Game2048.Tile maze[]){
+  public static void printBoard(Game2048.Tile board[]){
     for (int i = 0 ; i < 4 ; i++){
       for (int j = 0 ; j < 4 ; j++)
-        System.out.print(maze[i*4+j].value + " | ");
+        System.out.print(board[i*4+j].value + " | ");
       System.out.println("");
     }
     System.out.println("-----------------");
   }
 
 
-  private static Game2048.Tile[] deepCopyTiles(Game2048.Tile tiles[]) {
+  public static Game2048.Tile[] deepCopyBoard(Game2048.Tile tiles[]) {
     Game2048.Tile[] newTiles = new Game2048.Tile[tiles.length];
     for (int i = 0 ; i < tiles.length ; i++){
       Game2048.Tile newTile = new Game2048.Tile();

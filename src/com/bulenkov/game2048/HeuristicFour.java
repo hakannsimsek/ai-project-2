@@ -22,20 +22,65 @@ public class HeuristicFour {
     //Game2048.Tile tiles[];
 
     LinkedList<Game2048.Tile[]> leafNodesList = new LinkedList<Game2048.Tile[]>();
+    LinkedList<String> leafNodeNames = new LinkedList<String>();
     //4.heuristic bonus open squares and for having large values on the edge
     public void run(Game2048 game,int xply) {
-
-        leafNodesList = Game2048.gimmeLeaves(game.myTiles,xply);
-        int[][] openSquaresAndLargestValue = new int[leafNodesList.size()][2];
-        for (int i = 0 ; i < leafNodesList.size() ; i++) {
-            openSquaresAndLargestValue[i][0] = calculateOpenSquares(leafNodesList.get(i));
-            openSquaresAndLargestValue[i][1] = largestValueOnTheEdge(leafNodesList.get(i));
+        Game2048.Tile[] currentBoard = game.myTiles;
+        game.printBoard(currentBoard);
+        while (true) {
+            leafNodesList = Game2048.gimmeLeaves(Game2048.deepCopyBoard(currentBoard), xply, leafNodeNames);
+            int[][] openSquaresAndLargestValue = new int[leafNodesList.size()][2];
+            int[] appealingOfLeaves = new int[leafNodesList.size()];
+            for (int i = 0; i < leafNodesList.size(); i++) {
+                Game2048.Tile[] board = leafNodesList.get(i);
+                if (board == null) {
+                    openSquaresAndLargestValue[i][0] = -1;
+                    openSquaresAndLargestValue[i][1] = -1;
+                    appealingOfLeaves[i] = -1;
+                }
+                else {
+                    openSquaresAndLargestValue[i][0] = calculateOpenSquares(board);
+                    openSquaresAndLargestValue[i][1] = largestValueOnTheEdge(board);
+                    int appealingOfLeaf = log2(openSquaresAndLargestValue[i][1]);
+                    appealingOfLeaf += openSquaresAndLargestValue[i][0];
+                    appealingOfLeaves[i] = appealingOfLeaf;
+                }
+            }
+            int maxAppealing = highestAppealingValue(appealingOfLeaves);
+            int random;
+            while (true) {
+                random = (int) (Math.random() * leafNodesList.size());
+                if (appealingOfLeaves[random] == maxAppealing)
+                    break;
+            }
+            char nextMove = (char) leafNodeNames.get(random).charAt(0);
+            System.out.println("Next move will be : " + nextMove);
+            game.myTiles = Game2048.deepCopyBoard(currentBoard);
+            game.printBoard(currentBoard);
+            currentBoard = game.makeMove(nextMove);
+            if (currentBoard == null)
+                System.out.println("Game Over");
+            game.printBoard(currentBoard);
+            //köşedeki degerin log2 si + boş tile sayısı = evalution function
+            System.out.println();
+            System.out.println();
         }
-        //köşedeki degerin log2 si + boş tile sayısı = evalution function
-        System.out.println();
-        System.out.println();
 
 
+    }
+
+    private int highestAppealingValue(int[] appealingOfLeaves) {
+        int max = 0;
+        for (int value : appealingOfLeaves) {
+            if (max < value) max = value;
+        }
+        return max;
+    }
+
+    public int log2(int N)
+    {
+        if(N == 0) return 0;
+        return (int)(Math.log(N) / Math.log(2));
     }
 
     private int calculateOpenSquares(Game2048.Tile[] maze){
