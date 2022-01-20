@@ -58,11 +58,11 @@ public class Game2048 extends JPanel {
 
         //2ply left-right, left-up,left-left, left-down
 
-        //1.heuristic en fazla puanlı node
-        //3.heuristic counted the number of potential merges
+        // 1. heuristic en fazla puanlı node
+        // 3. heuristic counted the number of potential merges
 
-        //2.heuristic Monotonicity: values of the tiles are all either increasing or decreasing along all directions
-        //4.heuristic bonus open squares and for having large values on the edge
+        // 2. heuristic Monotonicity: values of the tiles are all either increasing or decreasing along all directions
+        // 4. heuristic bonus open squares and for having large values on the edge
 
 
         //Monotonicity:This heuristic tries to ensure that the values of the tiles are all either increasing or decreasing along both the left/right and up/down directions
