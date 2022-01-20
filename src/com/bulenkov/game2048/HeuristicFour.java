@@ -23,6 +23,7 @@ public class HeuristicFour {
 
     LinkedList<Game2048.Tile[]> leafNodesList = new LinkedList<Game2048.Tile[]>();
     LinkedList<String> leafNodeNames = new LinkedList<String>();
+    String directionHistory = "";
     //4.heuristic bonus open squares and for having large values on the edge
     public void run(Game2048 game,int xply) {
         Game2048.Tile[] currentBoard = game.myTiles;
@@ -47,19 +48,31 @@ public class HeuristicFour {
                 }
             }
             int maxAppealing = highestAppealingValue(appealingOfLeaves);
-            int random;
-            while (true) {
+
+            boolean isRepetition = checkIfRepetition(directionHistory);
+            int random = giveMaximumIndex(appealingOfLeaves,maxAppealing,isRepetition);
+
+            if(random == -1){
+                System.out.println("Game Over");
+                break;
+            }
+
+            /*while (true) {
                 random = (int) (Math.random() * leafNodesList.size());
                 if (appealingOfLeaves[random] == maxAppealing)
                     break;
-            }
-            char nextMove = (char) leafNodeNames.get(random).charAt(0);
+            }*/
+            char nextMove = leafNodeNames.get(random).charAt(0);
+            directionHistory += nextMove;
             System.out.println("Next move will be : " + nextMove);
             game.myTiles = Game2048.deepCopyBoard(currentBoard);
+            System.out.println("Current Board : ");
             game.printBoard(currentBoard);
             currentBoard = game.makeMove(nextMove);
             if (currentBoard == null)
                 System.out.println("Game Over");
+            System.out.println("Directions moved : " + directionHistory);
+            System.out.println("Board after move : ");
             game.printBoard(currentBoard);
             //köşedeki degerin log2 si + boş tile sayısı = evalution function
             System.out.println();
@@ -69,8 +82,43 @@ public class HeuristicFour {
 
     }
 
+    private int giveMaximumIndex(int appealingValues[],int maxAppealing,boolean isRepetition) {
+
+        int index = 0;
+        if ( appealingValues.length == 0 ) return -1;
+        if (!isRepetition) {
+            int random;
+            while (true) {
+                random = (int) (Math.random() * leafNodesList.size());
+                try {
+                    if (appealingValues[random] == maxAppealing){
+                        index = random;
+                        break;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        } else {
+            int max = -1;
+            for (int i = 0 ; i < appealingValues.length ; i++) {
+                if (appealingValues[i] > max && appealingValues[i] != maxAppealing)
+                    index = i;
+            }
+        }
+        return index;
+
+    }
+
+    private boolean checkIfRepetition (String history) {
+        if (history.length()<3) return false;
+        String substr = history.substring(history.length()-3);
+        return substr.charAt(0) == substr.charAt(1) && substr.charAt(1) == substr.charAt(2);
+    }
+
     private int highestAppealingValue(int[] appealingOfLeaves) {
-        int max = 0;
+        int max = -1;
         for (int value : appealingOfLeaves) {
             if (max < value) max = value;
         }
