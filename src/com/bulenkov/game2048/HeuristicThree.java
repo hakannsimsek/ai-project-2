@@ -39,6 +39,10 @@ public class HeuristicThree {
             int random;
             boolean isRepetition = checkIfRepetition(directionHistory);
             random = giveMaximumIndex(monotonicityValue,maxMonotonicity,isRepetition);
+            if(checkIfRepetitionTen(directionHistory)){
+                System.out.println("Game Over");
+                break;
+            }
             if(random == -1){
                 System.out.println("Game Over");
                 break;
@@ -92,9 +96,12 @@ public class HeuristicThree {
             }
         } else {
             int max = -1;
-            for (int i = 0 ; i < monotonicityValue.length ; i++) {
-                if (monotonicityValue[i] > max && monotonicityValue[i] != maxMonotonicity)
+            int i = (int)Math.random()*monotonicityValue.length;
+            for ( ; i < monotonicityValue.length ; i++) {
+                if (monotonicityValue[i] > max && monotonicityValue[i] != maxMonotonicity) {
                     index = i;
+                    max = monotonicityValue[i];
+                }
             }
         }
         return index;
@@ -113,6 +120,16 @@ public class HeuristicThree {
             if (max < value) max = value;
         }
         return max;
+    }
+
+    private boolean checkIfRepetitionTen(String history) {
+        if (history.length()<15) return false;
+        String substr = history.substring(history.length()-6);
+        boolean sub1 = substr.charAt(0) == substr.charAt(1)  && substr.charAt(1) == substr.charAt(2) && substr.charAt(2) == substr.charAt(3) && substr.charAt(3) == substr.charAt(4) && substr.charAt(4) == substr.charAt(5);
+        substr = history.substring(history.length()-12,history.length()-6);
+        boolean sub2 = substr.charAt(0) == substr.charAt(1)  && substr.charAt(1) == substr.charAt(2) && substr.charAt(2) == substr.charAt(3) && substr.charAt(3) == substr.charAt(4) && substr.charAt(4) == substr.charAt(5);
+        return sub1 && sub2;
+
     }
 
     //artıyosa +monotonicity, artmıyosa sabit

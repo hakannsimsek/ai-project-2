@@ -52,6 +52,11 @@ public class HeuristicFour {
             boolean isRepetition = checkIfRepetition(directionHistory);
             int random = giveMaximumIndex(appealingOfLeaves,maxAppealing,isRepetition);
 
+            if(checkIfRepetitionTen(directionHistory)){
+                System.out.println("Game Over");
+                break;
+            }
+
             if(random == -1){
                 System.out.println("Game Over");
                 break;
@@ -102,12 +107,26 @@ public class HeuristicFour {
             }
         } else {
             int max = -1;
-            for (int i = 0 ; i < appealingValues.length ; i++) {
-                if (appealingValues[i] > max && appealingValues[i] != maxAppealing)
+            int i = (int)Math.random()*appealingValues.length;
+            for ( ; i < appealingValues.length ; i++) {
+                if (appealingValues[i] > max && appealingValues[i] != maxAppealing){
                     index = i;
+                    max = appealingValues[i];
+                }
+
             }
         }
         return index;
+
+    }
+
+    private boolean checkIfRepetitionTen(String history) {
+        if (history.length()<15) return false;
+        String substr = history.substring(history.length()-6);
+        boolean sub1 = substr.charAt(0) == substr.charAt(1)  && substr.charAt(1) == substr.charAt(2) && substr.charAt(2) == substr.charAt(3) && substr.charAt(3) == substr.charAt(4) && substr.charAt(4) == substr.charAt(5);
+        substr = history.substring(history.length()-12,history.length()-6);
+        boolean sub2 = substr.charAt(0) == substr.charAt(1)  && substr.charAt(1) == substr.charAt(2) && substr.charAt(2) == substr.charAt(3) && substr.charAt(3) == substr.charAt(4) && substr.charAt(4) == substr.charAt(5);
+        return sub1 && sub2;
 
     }
 

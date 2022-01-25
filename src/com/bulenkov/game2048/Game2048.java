@@ -431,8 +431,13 @@ public class Game2048 extends JPanel {
     System.out.println("Staring board : ");
     printBoard(game2048.myTiles);*/
 
-    HeuristicTwo heuristicTwo = new HeuristicTwo();
-    heuristicTwo.run(game2048, xply);
+
+    try {
+      HeuristicFour heuristic = new HeuristicFour();
+      heuristic.run(game2048, xply);
+    }catch (NullPointerException ignore){
+
+    }
 
 
 /*
@@ -458,7 +463,7 @@ public class Game2048 extends JPanel {
   }
 
   static String str = "";
-  static int xply = 1;
+  static int xply = 2;
   static LinkedList<Game2048.Tile[]> leafNodesList = new LinkedList<Game2048.Tile[]>();
   static LinkedList<String> leafNodeNames;
   static Game2048 game2048;
@@ -478,7 +483,7 @@ public class Game2048 extends JPanel {
         game2048.myTiles = deepCopyBoard(tilees);
         tilees = game2048.makeMove(direction);
         if (str.length() == xply) {
-          printBoard(tilees);
+          //printBoard(tilees);
           leafNodesList.add(tilees);
           leafNodeNames.add(str);
         }

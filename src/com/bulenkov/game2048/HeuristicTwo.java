@@ -43,7 +43,12 @@ public class HeuristicTwo {
             int maxAppealing = highestAppealingValue(appealingOfLeaves);
 
             boolean isRepetition = checkIfRepetition(directionHistory);
+            System.out.println(isRepetition + ". History = " + directionHistory);
             int random = giveMaximumIndex(appealingOfLeaves,maxAppealing,isRepetition);
+            if(checkIfRepetitionTen(directionHistory)){
+                System.out.println("Game Over");
+                break;
+            }
 
             if(random == -1){
                 System.out.println("Game Over");
@@ -91,16 +96,19 @@ public class HeuristicTwo {
                         index = random;
                         break;
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
             }
         } else {
             int max = -1;
-            for (int i = 0 ; i < appealingValues.length ; i++) {
-                if (appealingValues[i] > max && appealingValues[i] != maxAppealing)
+            int i = (int)Math.random()*appealingValues.length;
+            for ( ; i < appealingValues.length ; i++) {
+                if (appealingValues[i] > max && appealingValues[i] != maxAppealing){
                     index = i;
+                    max = appealingValues[i];
+                }
             }
         }
         return index;
@@ -112,6 +120,17 @@ public class HeuristicTwo {
         String substr = history.substring(history.length()-3);
         return substr.charAt(0) == substr.charAt(1) && substr.charAt(1) == substr.charAt(2);
     }
+
+    private boolean checkIfRepetitionTen(String history) {
+        if (history.length()<15) return false;
+        String substr = history.substring(history.length()-6);
+        boolean sub1 = substr.charAt(0) == substr.charAt(1)  && substr.charAt(1) == substr.charAt(2) && substr.charAt(2) == substr.charAt(3) && substr.charAt(3) == substr.charAt(4) && substr.charAt(4) == substr.charAt(5);
+        substr = history.substring(history.length()-12,history.length()-6);
+        boolean sub2 = substr.charAt(0) == substr.charAt(1)  && substr.charAt(1) == substr.charAt(2) && substr.charAt(2) == substr.charAt(3) && substr.charAt(3) == substr.charAt(4) && substr.charAt(4) == substr.charAt(5);
+        return sub1 && sub2;
+
+    }
+
 
     private int highestAppealingValue(int[] appealingOfLeaves) {
         int max = -1;
