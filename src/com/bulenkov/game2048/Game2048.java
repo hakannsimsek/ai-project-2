@@ -431,8 +431,8 @@ public class Game2048 extends JPanel {
     System.out.println("Staring board : ");
     printBoard(game2048.myTiles);*/
 
-    HeuristicFour heuristicFour = new HeuristicFour();
-    heuristicFour.run(game2048,xply);
+    HeuristicTwo heuristicTwo = new HeuristicTwo();
+    heuristicTwo.run(game2048, xply);
 
 
 /*

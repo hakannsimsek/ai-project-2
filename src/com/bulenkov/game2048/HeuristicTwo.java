@@ -18,8 +18,9 @@ package com.bulenkov.game2048;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class HeuristicOne {
+public class HeuristicTwo {
     LinkedList<Game2048.Tile[]> leafNodesList = new LinkedList<Game2048.Tile[]>();
     LinkedList<String> leafNodeNames = new LinkedList<String>();
     String directionHistory = "";
@@ -36,7 +37,7 @@ public class HeuristicOne {
                     appealingOfLeaves[i] = -1;
                 }
                 else {
-                    appealingOfLeaves[i] = findMaximumTile(board);
+                    appealingOfLeaves[i] = getNumberOfPossibleMerges(board);
                 }
             }
             int maxAppealing = highestAppealingValue(appealingOfLeaves);
@@ -118,5 +119,45 @@ public class HeuristicOne {
             if (max < value) max = value;
         }
         return max;
+    }
+
+
+    private int getNumberOfPossibleMerges(Game2048.Tile[] board) {
+        AtomicInteger numberOfPossibleMerges = new AtomicInteger();
+        Arrays.stream(getVerticalLines(board)).forEach((line) -> numberOfPossibleMerges.addAndGet(getNumberOfPossibleMergesForALine(line)));
+        Arrays.stream(getHorizontalLines(board)).forEach((line) -> numberOfPossibleMerges.addAndGet(getNumberOfPossibleMergesForALine(line)));
+        return numberOfPossibleMerges.get();
+    }
+
+    private int getNumberOfPossibleMergesForALine(Game2048.Tile[] line) {
+        int numberOfPossibleMerges = 0;
+        int previousValue = -1;
+        for (Game2048.Tile tile: line) {
+            if (tile.value != 0 && previousValue == tile.value) {
+                numberOfPossibleMerges++;
+            }
+            previousValue = tile.value;
+        }
+        return numberOfPossibleMerges;
+    }
+
+    private Game2048.Tile[][] getVerticalLines(Game2048.Tile[] board) {
+        Game2048.Tile[][] verticalLines = new Game2048.Tile[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                verticalLines[i][j] = board[i + j * 4];
+            }
+        }
+        return verticalLines;
+    }
+
+    private Game2048.Tile[][] getHorizontalLines(Game2048.Tile[] board) {
+        Game2048.Tile[][] horizontalLines = new Game2048.Tile[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                horizontalLines[i][j] = board[i * 4 + j];
+            }
+        }
+        return horizontalLines;
     }
 }
